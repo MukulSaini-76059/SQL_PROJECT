@@ -1,12 +1,15 @@
 -- CREATE DATABASE
+
 CREATE DATABASE project1;
 
 
 -- USE DATABASE
+
 USE project1;
 
 
 -- CREATE TABLE
+
 CREATE TABLE sales(
       transaction_id INT PRIMARY KEY,
       sale_date DATE,
@@ -22,6 +25,7 @@ CREATE TABLE sales(
 
 
 -- INSERT DATA IN THE DATABASE
+
 INSERT INTO sales (  transaction_id ,sale_date ,sale_time,customer_id , gender  ,age, category ,quantity,price_per_unit,cogs,total_sale )VALUES
 (1,'2025-01-01','09:15:00',1001,'Male',25,'Electronics',1,501.00,300.00,500.00),
 (2,'2025-01-01','10:05:00',1002,'Female',30,'Clothing',2,40.00,48.00,80.00),
@@ -67,6 +71,7 @@ INSERT INTO sales (  transaction_id ,sale_date ,sale_time,customer_id , gender  
 
 
 -- SHOW NULL
+
 SELECT * FROM sales 
 WHERE transaction_id  IS NULL
 OR 
@@ -91,28 +96,28 @@ OR
 
 -- DATA EXPLORATION
 
--- How many sales we have ? 
+--Q1 How many sales we have ? 
 SELECT COUNT(*) FROM sales;
 
--- How many unique customer we have ?
+--Q2 How many unique customer we have ?
 SELECT COUNT(DISTINCT customer_id) FROM sales;
 
--- How many unique gender we have ?
+--Q3 How many unique gender we have ?
 SELECT COUNT(DISTINCT gender ) FROM sales;
  
- -- How many unique category we have with name ?
+ --Q4 How many unique category we have with name ?
  SELECT COUNT(DISTINCT category) ,category FROM sales
  GROUP BY category;
  
  
  -- DATA ANALYSIS & BUSINESS KEY PROBLEM
  
- -- Write a SQL query to retrieve all columns for sale made on 2025-01-07 ?
+ --Q1 Write a SQL query to retrieve all columns for sale made on 2025-01-07 ?
  SELECT *
  FROM sales
  WHERE sale_date = '2025-01-07';
  
- -- Write a SQL query to retrieve all transactions where the category is clothing and the quantity sold is more than 2 in the month of JAN- 2025?
+ --Q2 Write a SQL query to retrieve all transactions where the category is clothing and the quantity sold is more than 2 in the month of JAN- 2025?
  SELECT *
  FROM sales
  WHERE category ='clothing' 
@@ -121,28 +126,28 @@ SELECT COUNT(DISTINCT gender ) FROM sales;
  AND 
  quantity >2;
  
--- Write a SQL query to calculate the total sales for each category?
+--Q3 Write a SQL query to calculate the total sales for each category?
 SELECT category, SUM(total_sale)
 FROM sales
 GROUP BY category;
 
--- Write a SQL query to find the average age of customer who purchased items from the 'Beauty' category?
+--Q4 Write a SQL query to find the average age of customer who purchased items from the 'Beauty' category?
 SELECT AVG(age)
 FROM sales
 WHERE category ='Beauty';      
 
--- Write a SQL query to find the total number of transaction made by each gender in each category ?
+--Q5 Write a SQL query to find the total number of transaction made by each gender in each category ?
 SELECT category , gender , COUNT(*)
 FROM sales
 GROUP BY category , gender
 ORDER BY 1;
 
--- Write a SQL query to find all transaction where the total_sale is greaater than 500 ?
+--Q6 Write a SQL query to find all transaction where the total_sale is greaater than 500 ?
 SELECT * 
 FROM sales
 WHERE total_sale>500;
 
--- Write a SQL query to calculate the average sale for each month. Find out best selling month in each year ? not complete
+--Q7 Write a SQL query to calculate the average sale for each month. Find out best selling month in each year ? not complete
 SELECT year, month, avg_monthly_sale
 FROM (
     SELECT 
@@ -157,20 +162,20 @@ FROM (
 WHERE rnk = 1;
 
 
--- Write a SQL query to find the top 5 customers based on the highest total sale ?
+--Q8 Write a SQL query to find the top 5 customers based on the highest total sale ?
 SELECT customer_id,SUM(total_sale)
 FROM sales
 GROUP BY 1
 ORDER BY 2 DESC
 LIMIT 5;
 
--- Write a SQL query to find the number of unique customer who purchased items from each category ?
+--Q9 Write a SQL query to find the number of unique customer who purchased items from each category ?
 SELECT category , 
 COUNT( DISTINCT customer_id)
 FROM sales 
 GROUP BY category;
 
--- Write a SQL query to create each shift  and number of orders (Example morning<=12, afternoon between 12 & 17 , evening >17)?
+--Q10 Write a SQL query to create each shift  and number of orders (Example morning<=12, afternoon between 12 & 17 , evening >17)?
 SELECT shift, COUNT(*)
 FROM(
 	   SELECT *,
