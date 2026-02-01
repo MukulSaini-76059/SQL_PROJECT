@@ -1,5 +1,12 @@
+-- CREATE DATABASE
 CREATE DATABASE project1;
+
+
+-- USE DATABASE
 USE project1;
+
+
+-- CREATE TABLE
 CREATE TABLE sales(
       transaction_id INT PRIMARY KEY,
       sale_date DATE,
@@ -12,9 +19,9 @@ CREATE TABLE sales(
       price_per_unit FLOAT,
       cogs FLOAT,
       total_sale FLOAT);
-DROP TABLE  sales;      
-TRUNCATE TABLE sales;
-DROP DATABASE project1;
+
+
+-- INSERT DATA IN THE DATABASE
 INSERT INTO sales (  transaction_id ,sale_date ,sale_time,customer_id , gender  ,age, category ,quantity,price_per_unit,cogs,total_sale )VALUES
 (1,'2025-01-01','09:15:00',1001,'Male',25,'Electronics',1,501.00,300.00,500.00),
 (2,'2025-01-01','10:05:00',1002,'Female',30,'Clothing',2,40.00,48.00,80.00),
@@ -56,7 +63,10 @@ INSERT INTO sales (  transaction_id ,sale_date ,sale_time,customer_id , gender  
 (38,'2025-01-13','10:15:00',1038,'Female',23,'Grocery',9,6.00,32.40,54.00),
 (39,'2025-01-13','11:30:00',1039,'Male',27,'Beauty',2,95.00,114.00,190.00),
 (40,'2025-01-14','12:40:00',1040,'Female',34,'Sports',1,210.00, NULL,210.00);
-SELECT * FROM sales;
+
+
+
+-- SHOW NULL
 SELECT * FROM sales 
 WHERE transaction_id  IS NULL
 OR 
@@ -77,7 +87,8 @@ OR
  cogs IS NULL
  OR total_sale IS NULL;      
  
- 
+
+
 -- DATA EXPLORATION
 
 -- How many sales we have ? 
@@ -94,7 +105,7 @@ SELECT COUNT(DISTINCT gender ) FROM sales;
  GROUP BY category;
  
  
- --        DATA ANALYSIS & BUSINESS KEY PROBLEM
+ -- DATA ANALYSIS & BUSINESS KEY PROBLEM
  
  -- Write a SQL query to retrieve all columns for sale made on 2025-01-07 ?
  SELECT *
@@ -132,12 +143,19 @@ FROM sales
 WHERE total_sale>500;
 
 -- Write a SQL query to calculate the average sale for each month. Find out best selling month in each year ? not complete
-SELECT YEAR(sale_date) as year,
-MONTH(sale_date) as month,
-AVG(total_sale)
-FROM sales
-GROUP BY 1,2
-ORDER BY 1, 3 DESC;
+SELECT year, month, avg_monthly_sale
+FROM (
+    SELECT 
+        YEAR(sale_date) AS year,
+        MONTH(sale_date) AS month,
+        AVG(total_sale) AS avg_monthly_sale,
+        RANK() OVER (PARTITION BY YEAR(sale_date) ORDER BY AVG(total_sale) DESC) AS rnk
+    FROM sales
+    WHERE sale_date IS NOT NULL
+    GROUP BY YEAR(sale_date), MONTH(sale_date)
+) AS t
+WHERE rnk = 1;
+
 
 -- Write a SQL query to find the top 5 customers based on the highest total sale ?
 SELECT customer_id,SUM(total_sale)
@@ -154,13 +172,14 @@ GROUP BY category;
 
 -- Write a SQL query to create each shift  and number of orders (Example morning<=12, afternoon between 12 & 17 , evening >17)?
 SELECT shift, COUNT(*)
-FROM
-(SELECT *,
- CASE
-  WHEN sale_time < '12:00:00' THEN 'Morning'
-  WHEN sale_time BETWEEN '12:00:00' AND '17:00:00' THEN 'Afternoon'
-  ELSE  'Evening'
- END AS Shift 
-FROM sales) AS t
+FROM(
+	   SELECT *,
+          CASE
+            WHEN sale_time < '12:00:00' THEN 'Morning'
+            WHEN sale_time BETWEEN '12:00:00' AND '17:00:00' THEN 'Afternoon'
+            ELSE  'Evening'
+         END AS Shift 
+      FROM sales
+	) AS t
 GROUP BY shift;
  
